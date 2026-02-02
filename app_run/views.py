@@ -51,7 +51,7 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
 
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['first_name', 'last_name']
-    ordering_fields = ['created_at']
+    ordering_fields = ['date_joined']
     pagination_class = UserPagination
 
     def get_queryset(self):
