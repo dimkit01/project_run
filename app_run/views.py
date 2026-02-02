@@ -1,6 +1,10 @@
+from http.client import responses
+
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from django.conf import settings
@@ -38,3 +42,26 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
         elif user_type == 'athlete':
             qs = qs.filter(is_staff=False)
         return qs
+
+
+class StartRunView(APIView):
+
+
+    def post(self, request, run_id):
+        run = get_object_or_404(Run, id=run_id)
+        if request.run.status == 'finished' or request.run.status == 'in_progress':
+            return Response(self, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            request.run.status = 'in_progress'
+            return Response(self, status=status.HTTP_200_OK)
+
+
+
+class StopRunView(APIView):
+    def post(self, request, run_id):
+        run = get_object_or_404(Run, id=run_id)
+        if request.run.status == 'init' or request.run.status == 'finished':
+            return Response(self, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            request.run.status = 'finished'
+            return Response(self, status=status.HTTP_200_OK)
