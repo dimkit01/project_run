@@ -46,22 +46,23 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
 
 class StartRunView(APIView):
 
-
-    def post(self, request, run_id):
+    def get(self, request, run_id):
         run = get_object_or_404(Run, id=run_id)
-        if request.run.status == 'finished' or request.run.status == 'in_progress':
+        if run.status == 'finished' or run.status == 'in_progress':
             return Response(self, status=status.HTTP_400_BAD_REQUEST)
         else:
-            request.run.status = 'in_progress'
-            return Response(self, status=status.HTTP_200_OK)
+            run.status = 'in_progress'
+            run.save()
+            return Response(run.status, status=status.HTTP_200_OK)
 
 
 
 class StopRunView(APIView):
-    def post(self, request, run_id):
+    def get(self, request, run_id):
         run = get_object_or_404(Run, id=run_id)
-        if request.run.status == 'init' or request.run.status == 'finished':
+        if run.status == 'init' or run.status == 'finished':
             return Response(self, status=status.HTTP_400_BAD_REQUEST)
         else:
-            request.run.status = 'finished'
-            return Response(self, status=status.HTTP_200_OK)
+            run.status = 'finished'
+            run.save()
+            return Response(run.status, status=status.HTTP_200_OK)
