@@ -46,7 +46,7 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
 
 class StartRunView(APIView):
 
-    def get(self, request, run_id):
+    def post(self, request, run_id):
         run = get_object_or_404(Run, id=run_id)
         if run.status == 'finished' or run.status == 'in_progress':
             return Response(self, status=status.HTTP_400_BAD_REQUEST)
@@ -58,7 +58,7 @@ class StartRunView(APIView):
 
 
 class StopRunView(APIView):
-    def get(self, request, run_id):
+    def post(self, request, run_id):
         run = get_object_or_404(Run, id=run_id)
         if run.status == 'init' or run.status == 'finished':
             return Response(self, status=status.HTTP_400_BAD_REQUEST)
