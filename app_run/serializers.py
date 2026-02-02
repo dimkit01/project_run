@@ -7,10 +7,11 @@ from .models import Run
 
 class UserSerializer(serializers.ModelSerializer):
     type: SerializerMethodField = serializers.SerializerMethodField()
+    runs_finished: SerializerMethodField = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type']
+        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type', 'runs_finished']
 
 
     def get_type(self, obj):
@@ -19,6 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             obj.type = 'athlete'
         return obj.type
+
+    def get_runs_finished(self, obj):
+        return Run.objects.filter(athlete=obj, status='finished').count()
 
 
 class UserShortSerializer(serializers.ModelSerializer):
