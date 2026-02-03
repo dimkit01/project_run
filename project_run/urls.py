@@ -20,12 +20,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 from app_run.views import  company_details
 from rest_framework.routers import DefaultRouter
-from app_run.views import RunViewSet, UsersViewSet, StartRunView, StopRunView
+from app_run.views import RunViewSet, UsersViewSet, StartRunView, StopRunView, AthleteInfoView
 
 router = DefaultRouter()
 router.register('api/runs', RunViewSet)
-#router.register('api/runs/{run_id}/start/', StartRunView.as_view())
-#router.register('api/runs/{run_id}/stop/', StopRunViewSet)
 router.register('api/users', UsersViewSet)
 
 urlpatterns = [
@@ -33,5 +31,6 @@ urlpatterns = [
     path('api/company_details/', company_details, name='company_details'),
     path('api/runs/<int:run_id>/start/', StartRunView.as_view(), name='start_run'),
     path('api/runs/<int:run_id>/stop/', StopRunView.as_view(), name='stop_run'),
+    path('api/athlete_info/<int:user_id>/', AthleteInfoView.as_view(), name='athlete_info'),
     path('', include(router.urls)),
 ]

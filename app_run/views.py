@@ -9,8 +9,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from django.conf import settings
 from rest_framework import viewsets
-from .models import Run
-from .serializers import RunSerializer, UserSerializer
+from .models import Run, AthleteInfo
+from .serializers import RunSerializer, UserSerializer, AthleteInfoSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
@@ -87,3 +87,36 @@ class StopRunView(APIView):
             run.status = 'finished'
             run.save()
             return Response(run.status, status=status.HTTP_200_OK)
+
+
+class AthleteInfoView(APIView):
+    def get(self, request, user_id):
+        # Проверяем существование юзера, получаем объект
+        user_obj = get_object_or_404(User, id=user_id)
+
+        # Обращаемся через объект user_obj
+        athlete, _ = AthleteInfo.objects.get_or_create(
+            user_id=user_obj,
+            defaults={'weight': 0, 'goal': ''}
+        )
+
+        serializer = AthleteInfoSerializer(athlete)
+        return Response(serializer.data)
+
+    def put(self, request, user_id):
+        user_obj = get_object_or_404(User, id=user_id)
+
+        # Сначала находим или создаем объект
+        athlete, _ = AthleteInfo.objects.get_or_create(
+            user_id=user_obj,
+            defaults={'weight': 0, 'goal': ''}
+        )
+
+        # Валидируем данные через сериализатор
+        serializer = AthleteInfoSerializer(athlete, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # Возвращаем 201 по условию задачи
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
