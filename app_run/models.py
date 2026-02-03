@@ -21,7 +21,7 @@ class Run(models.Model):
 
 class AthleteInfo(models.Model):
 
-    weight = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(899)])
+    weight = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(899)])
     goal = models.TextField()
     user_id = models.OneToOneField(
         User,
