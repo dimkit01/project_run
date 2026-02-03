@@ -41,6 +41,11 @@ class RunSerializer(serializers.ModelSerializer):
 
 
 class AthleteInfoSerializer(serializers.ModelSerializer):
+    # Явно указываем user_id, чтобы он был в JSON
+    user_id = serializers.ReadOnlyField(source='pk')
+    # Маппим поле goal из модели в goals для ответа
+    goals = serializers.CharField(source='goal')
+
     class Meta:
         model = AthleteInfo
-        fields = ['weight', 'goal']
+        fields = ['user_id','weight', 'goals']

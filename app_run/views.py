@@ -101,7 +101,7 @@ class AthleteInfoView(APIView):
         )
 
         serializer = AthleteInfoSerializer(athlete)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, user_id):
         user_obj = get_object_or_404(User, id=user_id)
@@ -109,7 +109,7 @@ class AthleteInfoView(APIView):
         # Сначала находим или создаем объект
         athlete, _ = AthleteInfo.objects.get_or_create(
             user_id=user_obj,
-            defaults={'weight': 0, 'goal': ''}
+            defaults={'weight': 0, 'goals': ''}
         )
 
         # Валидируем данные через сериализатор
