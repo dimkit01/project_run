@@ -62,7 +62,7 @@ class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Positions
         fields = '__all__'
-        read_only_fields = ('run',)
+
 
     def validate_run(self, value):
         if value.status != 'in_progress' :
