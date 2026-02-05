@@ -106,7 +106,7 @@ class AthleteInfoView(APIView):
         # Обращаемся через объект user_obj
         athlete, _ = AthleteInfo.objects.get_or_create(
             user_id=user_obj,
-            defaults={'weight': 0, 'goals': ''}
+            defaults={'weight': 0, 'goal': ''}
         )
 
         serializer = AthleteInfoSerializer(athlete)
