@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.fields import SerializerMethodField
 
-from .models import Run, AthleteInfo, Challenge
+from .models import Run, AthleteInfo, Challenge, Positions
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -55,3 +55,16 @@ class ChallengeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Challenge
         fields = '__all__'
+
+
+class PositionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Positions
+        fields = '__all__'
+        read_only_fields = ('run',)
+
+    def validate_run(self, value):
+        if value.status != 'in_progress' :
+            raise serializers.ValidationError('Run is not in_progress')
+        return value

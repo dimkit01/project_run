@@ -32,3 +32,9 @@ class AthleteInfo(models.Model):
 class Challenge(models.Model):
     full_name = models.TextField()
     athlete = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Positions(models.Model):
+    run = models.ForeignKey(Run, on_delete=models.CASCADE)
+    latitude = models.DecimalField(max_digits=7, decimal_places=4, validators=[MinValueValidator(-90), MaxValueValidator(90)])
+    longitude = models.DecimalField(max_digits=8,  decimal_places=4, validators=[MinValueValidator(-180), MaxValueValidator(180)])
