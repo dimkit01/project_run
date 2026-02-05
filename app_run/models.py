@@ -27,3 +27,8 @@ class AthleteInfo(models.Model):
         User,
         on_delete=models.CASCADE,
         primary_key=True)
+
+
+class Challenge(models.Model):
+    full_name = models.TextField()
+    athlete = models.ForeignKey(User, on_delete=models.CASCADE)
