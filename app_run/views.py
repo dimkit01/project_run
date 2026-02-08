@@ -98,6 +98,7 @@ class StopRunView(APIView):
                 for i in range(len(coords) - 1):
                     total_distance += geodesic(coords[i], coords[i + 1]).km
 
+            run.distance = total_distance
             run.status = 'finished'
             run.save()
 
