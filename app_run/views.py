@@ -1,5 +1,7 @@
 from dis import Positions
 from http.client import responses
+import geopy
+from geopy.distance import geodesic
 
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
@@ -16,6 +18,7 @@ from .serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, C
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
+
 
 
 # Create your views here.
@@ -86,6 +89,15 @@ class StopRunView(APIView):
         if run.status == 'init' or run.status == 'finished':
             return Response( status=status.HTTP_400_BAD_REQUEST)
         else:
+            positions = Positions.objects.filter(run_id=run_id).order_by('id')
+            total_distance = 0.0
+
+            if positions.count() > 1:
+                coords = [(p.latitude, p.longitude) for p in positions]
+
+                for i in range(len(coords) - 1):
+                    total_distance += geodesic(coords[i], coords[i + 1]).km
+
             run.status = 'finished'
             run.save()
 
