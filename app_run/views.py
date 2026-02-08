@@ -89,7 +89,7 @@ class StopRunView(APIView):
         if run.status == 'init' or run.status == 'finished':
             return Response( status=status.HTTP_400_BAD_REQUEST)
         else:
-            positions = Positions.objects.filter(run_id=run_id).order_by('id')
+            positions = Positions.objects.filter(run=run).order_by('id')
             total_distance = 0.0
 
             if positions.count() > 1:
