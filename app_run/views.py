@@ -18,6 +18,7 @@ from .serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, C
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Sum
 
 
 
@@ -105,6 +106,12 @@ class StopRunView(APIView):
             finished_run_count = Run.objects.filter(athlete=run.athlete, status='finished').count()
 
             if finished_run_count == 10:
+                Challenge.objects.get_or_create(
+                    athlete=run.athlete,
+                    full_name='Сделай 10 Забегов!',
+                )
+
+            if Run.objects.filter(athlete=run.athlete, status='finished').aggregate(Sum('distance')) > 50.0:
                 Challenge.objects.get_or_create(
                     athlete=run.athlete,
                     full_name='Сделай 10 Забегов!',
