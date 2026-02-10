@@ -39,3 +39,12 @@ class Positions(models.Model):
     run = models.ForeignKey(Run, on_delete=models.CASCADE)
     latitude = models.DecimalField(max_digits=7, decimal_places=4, validators=[MinValueValidator(-90), MaxValueValidator(90)])
     longitude = models.DecimalField(max_digits=8,  decimal_places=4, validators=[MinValueValidator(-180), MaxValueValidator(180)])
+    
+    
+class CollectibleItem(models.Model):
+    name = models.CharField(max_length=255)
+    uid = models.CharField(max_length=100, unique=True)
+    latitude = models.DecimalField(max_digits=7, decimal_places=4, validators=[MinValueValidator(-90), MaxValueValidator(90)])
+    longitude = models.DecimalField(max_digits=8,  decimal_places=4, validators=[MinValueValidator(-180), MaxValueValidator(180)])
+    picture = models.URLField()
+    value = models.IntegerField()

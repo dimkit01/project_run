@@ -2,6 +2,7 @@ from dis import Positions
 from http.client import responses
 import geopy
 from geopy.distance import geodesic
+import openpyxl
 
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
@@ -13,8 +14,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from django.conf import settings
 from rest_framework import viewsets
-from .models import Run, AthleteInfo, Challenge, Positions
-from .serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, PositionSerializer
+from .models import Run, AthleteInfo, Challenge, Positions, CollectibleItem
+from .serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, PositionSerializer, CollectibleItemSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import PageNumberPagination
@@ -167,3 +168,65 @@ class PositionsViewSet(viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['run']
+
+
+@api_view(['POST'])
+def upload_students(request):
+    file = request.FILES.get('file')   
+    ... # Проверка и чтение файла
+    filedata = ... # Читаем содержимое файла
+
+    for row in filedata:  
+        serializer = StudentSerializer(data=row)
+        if serializer.is_valid():
+            # Делаем что-то если данные в порядке
+            pass
+        else:
+            # Делаем что-то если данные не прошли валидацию
+            pass
+
+
+class CollectibleItemsView(APIView):
+    queryset = CollectibleItem.objects.all()
+    serializer_class = CollectibleItemSerializer
+    
+    
+class UploadFileView(APIView):
+    def post(self, request):
+        file_obj = request.FILES.get('file')
+        
+        if not file_obj:
+            return Response({'error' : 'Файл не найден!'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            workbook = openpyxl.load_workbook(file_obj)
+            sheet = workbook.active
+            
+            valid_items = []
+            invalid_items = []
+            
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                data = {
+                    "name": row[0],
+                    "uid": row[1],
+                    "value": row[2],
+                    "latitude": row[3],
+                    "longitude": row[4],
+                    "picture": row[5]
+                }
+                
+                serializer = CollectibleItemSerializer(data=data)
+                
+                if serializer.is_valid():
+                    valid_items.append(CollectibleItem(**serializer.validated_data))
+                else:
+                    invalid_items.append(list(row))
+                    
+            if valid_items:
+                CollectibleItem.objects.bulk_create(valid_items, ignore_conflicts=True)
+                
+            return Response(invalid_items, status=status.HTTP_200_OK)
+                
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)    
+    
