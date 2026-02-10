@@ -9,6 +9,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework import status
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
@@ -170,23 +171,7 @@ class PositionsViewSet(viewsets.ModelViewSet):
     filterset_fields = ['run']
 
 
-@api_view(['POST'])
-def upload_students(request):
-    file = request.FILES.get('file')   
-    ... # Проверка и чтение файла
-    filedata = ... # Читаем содержимое файла
-
-    for row in filedata:  
-        serializer = StudentSerializer(data=row)
-        if serializer.is_valid():
-            # Делаем что-то если данные в порядке
-            pass
-        else:
-            # Делаем что-то если данные не прошли валидацию
-            pass
-
-
-class CollectibleItemsView(APIView):
+class CollectibleItemsView(ListAPIView):
     queryset = CollectibleItem.objects.all()
     serializer_class = CollectibleItemSerializer
     
